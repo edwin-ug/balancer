@@ -13,6 +13,7 @@ import {
   sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 import { firebaseConfig } from "./firebase-config.js";
+import { cloudSync } from "./sync.js";
 
 // Initialize Firebase App & Auth
 let app;
@@ -20,6 +21,7 @@ let auth;
 try {
   app = initializeApp(firebaseConfig);
   auth = getAuth(app);
+  cloudSync.init(app);
 } catch (err) {
   console.error("Failed to initialize Firebase:", err);
 }
@@ -185,8 +187,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btnSettingsOpenAuth) {
           btnSettingsOpenAuth.textContent = 'Account Profile';
         }
+
+        // Connect real-time bidirectional cloud sync across devices
+        cloudSync.connectUser(user, window.balancerStore);
       } else {
         // User is SIGNED OUT: Hide App, Reveal Login Screen Gate
+        cloudSync.disconnectUser();
         if (appRoot) appRoot.style.display = 'none';
         if (authGateScreen) authGateScreen.style.display = 'flex';
 
@@ -228,6 +234,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (btnAuthHeader) btnAuthHeader.addEventListener('click', openProfileModal);
   if (btnSettingsOpenAuth) btnSettingsOpenAuth.addEventListener('click', openProfileModal);
+
+  const btnForceSync = document.getElementById('btnForceSync');
+  if (btnForceSync) {
+    btnForceSync.addEventListener('click', async () => {
+      btnForceSync.disabled = true;
+      btnForceSync.innerHTML = '<span>Syncing...</span>';
+      await cloudSync.forceSyncNow(window.balancerStore);
+      btnForceSync.disabled = false;
+      btnForceSync.innerHTML = '<span>Sync Now</span>';
+      if (window.showToast) window.showToast('Cloud sync complete', 'success');
+    });
+  }
 
   // -------------------------------------------------------------
   // FORM 1: SIGN IN

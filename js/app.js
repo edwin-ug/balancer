@@ -5,6 +5,20 @@
 document.addEventListener('DOMContentLoaded', () => {
   // Initialize state store
   const store = new window.Store();
+  window.balancerStore = store;
+
+  // React to store changes (including real-time cloud sync from other devices)
+  store.subscribe(() => {
+    renderFormFields();
+    recalculateAndRender();
+    const activeTab = document.querySelector('.nav-tab.active');
+    if (activeTab) {
+      const tabId = activeTab.getAttribute('data-tab');
+      if (tabId === 'history') renderHistoryList();
+      if (tabId === 'ledger') renderLedgers();
+      if (tabId === 'settings') renderSettings();
+    }
+  });
 
   // Elements
   const tabButtons = document.querySelectorAll('.nav-tab');

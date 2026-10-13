@@ -105,4 +105,35 @@ store.removeAgent(newAg.id);
 assert.strictEqual(store.settings.agents.length, agCount - 1);
 console.log('✓ Adding and removing agents verified');
 
+// Test Cloud Synchronization: applyRemoteData
+const remoteSettings = {
+  presetCapital: 35000000,
+  capitalSource: 'preset',
+  floatAccounts: [
+    { id: 'mtn_remote', name: 'MTN Remote Line', category: 'telecom', provider: 'mtn', enabled: true }
+  ]
+};
+const remoteHistory = [
+  { id: 'remote_session_1', timestamp: Date.now(), targetCapital: 35000000, netActualCapital: 35000000, variance: 0, status: 'balanced' }
+];
+
+const syncResult = store.applyRemoteData({
+  settings: remoteSettings,
+  history: remoteHistory,
+  currentForm: { cash: 1500000 }
+});
+
+assert.strictEqual(syncResult, true);
+assert.strictEqual(store.settings.presetCapital, 35000000);
+assert.strictEqual(store.history.length, 1);
+assert.strictEqual(store.history[0].id, 'remote_session_1');
+assert.strictEqual(store.currentForm.cash, 1500000);
+console.log('✓ applyRemoteData multi-device sync verified');
+
+// Test data sanitization
+const sanitized = store.sanitizeSettings({ presetCapital: '45000000', agents: [{ id: 'a1', name: 'Test Agent' }] });
+assert.strictEqual(sanitized.presetCapital, 45000000);
+assert.strictEqual(sanitized.agents[0].name, 'Test Agent');
+console.log('✓ Store data sanitization verified');
+
 console.log('--- STORE TESTS PASSED SUCCESSFULLY! ---');

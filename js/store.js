@@ -461,6 +461,139 @@ class Store {
     this.saveCurrentForm(this.currentForm);
   }
 
+  // --- Multi-Device Cloud Synchronization Helpers ---
+  applyRemoteData(remoteData) {
+    if (!remoteData || typeof remoteData !== 'object') return false;
+    let hasChanges = false;
+
+    // 1. Settings Sync
+    if (remoteData.settings && typeof remoteData.settings === 'object') {
+      const mapList = (list, defaultList) => {
+        if (!Array.isArray(list)) return JSON.parse(JSON.stringify(defaultList));
+        return list.map(item => ({
+          ...item,
+          enabled: item.enabled !== false
+        }));
+      };
+
+      this.settings = {
+        ...DEFAULT_SETTINGS,
+        ...remoteData.settings,
+        agents: mapList(remoteData.settings.agents, DEFAULT_SETTINGS.agents),
+        stakeholders: mapList(remoteData.settings.stakeholders, DEFAULT_SETTINGS.stakeholders),
+        floatAccounts: mapList(remoteData.settings.floatAccounts, DEFAULT_SETTINGS.floatAccounts),
+        commissionAccounts: mapList(remoteData.settings.commissionAccounts, DEFAULT_SETTINGS.commissionAccounts)
+      };
+
+      try {
+        localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(this.settings));
+      } catch (e) {
+        console.warn('LocalStorage save failed for settings:', e);
+      }
+      hasChanges = true;
+    }
+
+    // 2. History Sync
+    if (Array.isArray(remoteData.history)) {
+      this.history = remoteData.history;
+      try {
+        localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(this.history));
+      } catch (e) {
+        console.warn('LocalStorage save failed for history:', e);
+      }
+      hasChanges = true;
+    }
+
+    // 3. Current Form / Draft Sync
+    if (remoteData.currentForm && typeof remoteData.currentForm === 'object') {
+      this.currentForm = {
+        ...this.currentForm,
+        ...remoteData.currentForm
+      };
+      try {
+        localStorage.setItem(STORAGE_KEYS.CURRENT_FORM, JSON.stringify(this.currentForm));
+      } catch (e) {
+        console.warn('LocalStorage save failed for currentForm:', e);
+      }
+      hasChanges = true;
+    }
+
+    if (hasChanges) {
+      this.notify();
+    }
+    return hasChanges;
+  }
+
+  sanitizeSettings(settings) {
+    const s = settings || this.settings || DEFAULT_SETTINGS;
+    return {
+      presetCapital: Math.max(0, Number(s.presetCapital) || 0),
+      capitalSource: String(s.capitalSource || 'last').slice(0, 20),
+      currency: String(s.currency || 'UGX').slice(0, 10),
+      agents: Array.isArray(s.agents) ? s.agents.slice(0, 50).map(a => ({
+        id: String(a.id || ''),
+        name: String(a.name || ''),
+        defaultName: String(a.defaultName || a.name || ''),
+        enabled: a.enabled !== false
+      })) : [],
+      stakeholders: Array.isArray(s.stakeholders) ? s.stakeholders.slice(0, 50).map(sh => ({
+        id: String(sh.id || ''),
+        name: String(sh.name || ''),
+        defaultName: String(sh.defaultName || sh.name || ''),
+        enabled: sh.enabled !== false
+      })) : [],
+      floatAccounts: Array.isArray(s.floatAccounts) ? s.floatAccounts.slice(0, 50).map(f => ({
+        id: String(f.id || ''),
+        name: String(f.name || ''),
+        category: String(f.category || 'other'),
+        provider: String(f.provider || 'other'),
+        enabled: f.enabled !== false
+      })) : [],
+      commissionAccounts: Array.isArray(s.commissionAccounts) ? s.commissionAccounts.slice(0, 50).map(c => ({
+        id: String(c.id || ''),
+        name: String(c.name || ''),
+        provider: String(c.provider || 'other'),
+        enabled: c.enabled !== false
+      })) : []
+    };
+  }
+
+  sanitizeCurrentForm(form) {
+    const f = form || this.currentForm || {};
+    const sanitizeNumberMap = (m, maxKeys = 100) => {
+      if (!m || typeof m !== 'object') return {};
+      const res = {};
+      const keys = Object.keys(m).slice(0, maxKeys);
+      keys.forEach(k => {
+        res[k] = Math.max(0, Number(m[k]) || 0);
+      });
+      return res;
+    };
+
+    return {
+      targetCapital: Math.max(0, Number(f.targetCapital) || 0),
+      targetSourceLabel: String(f.targetSourceLabel || 'Preset Capital').slice(0, 120),
+      capitalSourceMode: String(f.capitalSourceMode || 'last').slice(0, 20),
+      float: sanitizeNumberMap(f.float, 100),
+      cash: Math.max(0, Number(f.cash) || 0),
+      cashDenominations: sanitizeNumberMap(f.cashDenominations, 20),
+      agentPhones: sanitizeNumberMap(f.agentPhones, 50),
+      enableCommission: Boolean(f.enableCommission),
+      commissions: sanitizeNumberMap(f.commissions, 50),
+      enableStakeholderOut: Boolean(f.enableStakeholderOut),
+      stakeholderOut: sanitizeNumberMap(f.stakeholderOut, 50),
+      enableStakeholderIn: Boolean(f.enableStakeholderIn),
+      stakeholderIn: sanitizeNumberMap(f.stakeholderIn, 50),
+      notes: String(f.notes || '').slice(0, 5000),
+      updatedAt: Math.max(0, Number(f.updatedAt) || Date.now())
+    };
+  }
+
+  sanitizeHistory(history) {
+    const list = Array.isArray(history) ? history : (this.history || []);
+    return list.slice(0, 1000).map(item => JSON.parse(JSON.stringify(item)));
+  }
+
   saveBalancingSession(formData, notes = '') {
     const calc = calculateBalancing(formData, this.settings);
     const sessionRecord = {

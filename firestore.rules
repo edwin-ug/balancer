@@ -1,0 +1,235 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Application: Balancer (Agent Banking & Mobile Money Capital Balancing)
+    // Project: balancer-1ab7e
+    // Authentication: Firebase Authentication (Email/Password)
+    //
+    // Collection: /users/{userId}
+    // Document ID: Firebase Auth UID (must match request.auth.uid)
+    // Fields:
+    //   - settings: map (optional) - User preferences and entity registries
+    //       * presetCapital: int/float (optional, >= 0)
+    //       * capitalSource: string (optional, 'last' or 'preset')
+    //       * currency: string (optional, max 10 chars)
+    //       * agents: list of maps (optional, max 50 items)
+    //       * stakeholders: list of maps (optional, max 50 items)
+    //       * floatAccounts: list of maps (optional, max 50 items)
+    //       * commissionAccounts: list of maps (optional, max 50 items)
+    //   - currentForm: map (optional) - In-progress draft balancing session
+    //       * targetCapital: int/float (optional, >= 0)
+    //       * targetSourceLabel: string (optional, max 120 chars)
+    //       * capitalSourceMode: string (optional, max 20 chars)
+    //       * float: map of numbers (optional, max 100 entries)
+    //       * cash: int/float (optional, >= 0)
+    //       * cashDenominations: map of numbers (optional)
+    //       * agentPhones: map of numbers (optional, max 50 entries)
+    //       * enableCommission: bool (optional)
+    //       * commissions: map of numbers (optional, max 50 entries)
+    //       * enableStakeholderOut: bool (optional)
+    //       * stakeholderOut: map of numbers (optional, max 50 entries)
+    //       * enableStakeholderIn: bool (optional)
+    //       * stakeholderIn: map of numbers (optional, max 50 entries)
+    //       * notes: string (optional, max 5000 chars)
+    //       * updatedAt: int/float or timestamp (optional)
+    //   - history: list of maps (optional, max 1000 items) - Saved balancing sessions
+    //   - updatedAt: int/float or timestamp (optional) - Last sync timestamp
+    //   - createdAt: int/float or timestamp (optional) - Creation timestamp (immutable)
+    //   - uid: string (optional, must match request.auth.uid if present, immutable)
+    //
+    // Subcollections: /users/{userId}/{allSubcollections=**}
+    //   - Allows modular document-based subcollections under the user's isolated path
+    //     (such as /users/{userId}/sessions/{sessionId} or /users/{userId}/settings/{settingId})
+    //
+    // Security Guarantees:
+    //   - Strict Default Deny on all root paths.
+    //   - Zero unauthenticated access.
+    //   - Complete cross-tenant isolation: Users can only read, write, and delete
+    //     their own document tree where request.auth.uid == userId.
+    //   - Domain Validator Pattern enforced on both create and update operations.
+    //   - Immutable fields (uid, createdAt) cannot be altered on update.
+    //   - Strict type checks and payload size constraints to prevent resource exhaustion / DoS.
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    // Check if the user is authenticated
+    function isAuthenticated() {
+      return request.auth != null && request.auth.uid != null;
+    }
+
+    // Check if user owns the resource path
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Verify UID field has not been tampered with on create
+    function uidUnchanged() {
+      return !('uid' in request.resource.data) ||
+        request.resource.data.uid == request.auth.uid;
+    }
+
+    // Ensure uid field is not modified on update
+    function uidNotModified() {
+      return !('uid' in request.resource.data) ||
+        !('uid' in resource.data) ||
+        request.resource.data.uid == resource.data.uid;
+    }
+
+    // Ensure createdAt timestamp is not modified on update
+    function createdAtNotModified() {
+      return !('createdAt' in resource.data) ||
+        ('createdAt' in request.resource.data &&
+         request.resource.data.createdAt == resource.data.createdAt);
+    }
+
+    // Validate that only allowed fields are present on the root user document
+    function hasOnlyAllowedUserFields() {
+      return request.resource.data.keys().hasOnly([
+        'settings',
+        'currentForm',
+        'history',
+        'updatedAt',
+        'createdAt',
+        'uid'
+      ]);
+    }
+
+    // Validate timestamps (can be Firestore timestamp or integer epoch millisecond)
+    function isValidTimestampValue(val) {
+      return val is timestamp || (val is int && val >= 0);
+    }
+
+    // Validate settings map payload
+    function isValidSettings(settingsData) {
+      return settingsData is map &&
+        settingsData.keys().hasOnly([
+          'presetCapital',
+          'capitalSource',
+          'currency',
+          'agents',
+          'stakeholders',
+          'floatAccounts',
+          'commissionAccounts'
+        ]) &&
+        (!('presetCapital' in settingsData) || (settingsData.presetCapital is number && settingsData.presetCapital >= 0)) &&
+        (!('capitalSource' in settingsData) || (settingsData.capitalSource is string && settingsData.capitalSource.size() <= 20)) &&
+        (!('currency' in settingsData) || (settingsData.currency is string && settingsData.currency.size() <= 10)) &&
+        (!('agents' in settingsData) || (settingsData.agents is list && settingsData.agents.size() <= 50)) &&
+        (!('stakeholders' in settingsData) || (settingsData.stakeholders is list && settingsData.stakeholders.size() <= 50)) &&
+        (!('floatAccounts' in settingsData) || (settingsData.floatAccounts is list && settingsData.floatAccounts.size() <= 50)) &&
+        (!('commissionAccounts' in settingsData) || (settingsData.commissionAccounts is list && settingsData.commissionAccounts.size() <= 50));
+    }
+
+    // Validate currentForm map payload
+    function isValidCurrentForm(formData) {
+      return formData is map &&
+        formData.keys().hasOnly([
+          'targetCapital',
+          'targetSourceLabel',
+          'capitalSourceMode',
+          'float',
+          'cash',
+          'cashDenominations',
+          'agentPhones',
+          'enableCommission',
+          'commissions',
+          'enableStakeholderOut',
+          'stakeholderOut',
+          'enableStakeholderIn',
+          'stakeholderIn',
+          'notes',
+          'updatedAt'
+        ]) &&
+        (!('targetCapital' in formData) || (formData.targetCapital is number && formData.targetCapital >= 0)) &&
+        (!('targetSourceLabel' in formData) || (formData.targetSourceLabel is string && formData.targetSourceLabel.size() <= 120)) &&
+        (!('capitalSourceMode' in formData) || (formData.capitalSourceMode is string && formData.capitalSourceMode.size() <= 20)) &&
+        (!('float' in formData) || (formData.float is map && formData.float.size() <= 100)) &&
+        (!('cash' in formData) || (formData.cash is number && formData.cash >= 0)) &&
+        (!('cashDenominations' in formData) || (formData.cashDenominations is map && formData.cashDenominations.size() <= 20)) &&
+        (!('agentPhones' in formData) || (formData.agentPhones is map && formData.agentPhones.size() <= 50)) &&
+        (!('enableCommission' in formData) || formData.enableCommission is bool) &&
+        (!('commissions' in formData) || (formData.commissions is map && formData.commissions.size() <= 50)) &&
+        (!('enableStakeholderOut' in formData) || formData.enableStakeholderOut is bool) &&
+        (!('stakeholderOut' in formData) || (formData.stakeholderOut is map && formData.stakeholderOut.size() <= 50)) &&
+        (!('enableStakeholderIn' in formData) || formData.enableStakeholderIn is bool) &&
+        (!('stakeholderIn' in formData) || (formData.stakeholderIn is map && formData.stakeholderIn.size() <= 50)) &&
+        (!('notes' in formData) || (formData.notes is string && formData.notes.size() <= 5000)) &&
+        (!('updatedAt' in formData) || isValidTimestampValue(formData.updatedAt));
+    }
+
+    // Validate history array size to avoid document limits
+    function isValidHistory(historyData) {
+      return historyData is list && historyData.size() <= 1000;
+    }
+
+    // Validate subcollection documents (e.g. sessions, settings subdocs)
+    function isValidUserSubdocument() {
+      return (!('uid' in request.resource.data) || request.resource.data.uid == request.auth.uid) &&
+        (!('userId' in request.resource.data) || request.resource.data.userId == request.auth.uid);
+    }
+
+    // Domain validator for /users/{userId} document
+    function isValidUserDoc(data) {
+      return hasOnlyAllowedUserFields() &&
+        (!('settings' in data) || isValidSettings(data.settings)) &&
+        (!('currentForm' in data) || isValidCurrentForm(data.currentForm)) &&
+        (!('history' in data) || isValidHistory(data.history)) &&
+        (!('updatedAt' in data) || isValidTimestampValue(data.updatedAt)) &&
+        (!('createdAt' in data) || isValidTimestampValue(data.createdAt)) &&
+        (!('uid' in data) || (data.uid is string && data.uid == request.auth.uid));
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
+    // Root users collection
+    match /users/{userId} {
+      // User can only read their own document
+      allow get, list: if isOwner(userId);
+
+      // User can only create their own document with valid schema
+      allow create: if isOwner(userId) &&
+                       uidUnchanged() &&
+                       isValidUserDoc(request.resource.data);
+
+      // User can update their own document, maintaining immutability and schema
+      allow update: if isOwner(userId) &&
+                       uidNotModified() &&
+                       createdAtNotModified() &&
+                       isValidUserDoc(request.resource.data);
+
+      // User can delete their own document
+      allow delete: if isOwner(userId);
+
+      // Nested subcollections under /users/{userId}/...
+      // Allows individual session records or partitioned collections
+      match /{allSubcollections=**} {
+        allow get, list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidUserSubdocument();
+
+        allow update: if isOwner(userId) &&
+                         isValidUserSubdocument() &&
+                         uidNotModified();
+
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    // Explicit Default Deny for all other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

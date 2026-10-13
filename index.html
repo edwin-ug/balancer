@@ -223,6 +223,12 @@
           </svg>
           <span>Reset Form</span>
         </button>
+        <div id="cloudSyncIndicator" class="cloud-sync-badge sync-idle" title="Cloud Sync: Standby">
+          <svg class="ui-svg-sm cloud-sync-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+          </svg>
+          <span id="cloudSyncStatusText" class="cloud-sync-text">Synced</span>
+        </div>
         <button id="btnAuthHeader" class="btn btn-outline btn-sm auth-header-btn" title="Sign in or view account">
           <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -1222,8 +1228,30 @@
         </div>
         <h4 style="font-size: 1.15rem; margin-bottom: 4px;">Signed In Agent</h4>
         <p id="authProfileEmail" style="font-weight: 700; font-size: 1rem; color: var(--text-main); margin-bottom: 8px;"></p>
-        <div style="background: var(--bg-subtle); border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 20px; font-size: 0.78rem; color: var(--text-muted); font-family: var(--font-mono); word-break: break-all;">
+        <div style="background: var(--bg-subtle); border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 16px; font-size: 0.78rem; color: var(--text-muted); font-family: var(--font-mono); word-break: break-all;">
           UID: <span id="authProfileUid"></span>
+        </div>
+
+        <div class="profile-sync-card" style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px; margin-bottom: 20px; text-align: left;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-weight: 700; font-size: 0.88rem; display: flex; align-items: center; gap: 6px;">
+              <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+              </svg>
+              <span>Cross-Device Cloud Sync</span>
+            </span>
+            <span id="profileSyncStatus" class="status-pill status-balanced" style="font-size: 0.72rem; padding: 2px 8px;">Active</span>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4;">
+            Account parameters, float balances, agent configurations, and balancing history automatically synchronize across all your phones, tablets, and computers.
+          </p>
+          <button id="btnForceSync" class="btn btn-secondary btn-sm" style="width: 100%; font-size: 0.82rem;">
+            <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+            <span>Sync Now</span>
+          </button>
         </div>
         <div style="display: flex; gap: 10px; justify-content: center;">
           <button id="btnAuthSignOut" class="btn btn-danger" style="flex: 1;">

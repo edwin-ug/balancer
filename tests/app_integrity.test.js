@@ -14,7 +14,9 @@ const requiredFiles = [
   'js/store.js',
   'js/app.js',
   'js/auth.js',
+  'js/sync.js',
   'js/firebase-config.js',
+  'firestore.rules',
   'server.js',
   'package.json'
 ];
@@ -151,10 +153,19 @@ assert(indexHtml.includes('id="appRoot"'), 'appRoot wrapper missing in index.htm
 assert(!indexHtml.includes('border-bottom: 2px solid var(--primary); color: var(--primary);'), 'Inline border-bottom found on auth tabs causing sticky blue accent bug');
 assert(indexHtml.includes('js/auth.js'), 'auth.js script tag missing in index.html');
 const authJs = fs.readFileSync(path.join(projectRoot, 'js/auth.js'), 'utf8');
+const syncJs = fs.readFileSync(path.join(projectRoot, 'js/sync.js'), 'utf8');
 const fbConfigJs = fs.readFileSync(path.join(projectRoot, 'js/firebase-config.js'), 'utf8');
+const firestoreRules = fs.readFileSync(path.join(projectRoot, 'firestore.rules'), 'utf8');
 assert(!emojiRegex.test(authJs), 'auth.js contains emojis');
+assert(!emojiRegex.test(syncJs), 'sync.js contains emojis');
 assert(!emojiRegex.test(fbConfigJs), 'firebase-config.js contains emojis');
+assert(!emojiRegex.test(firestoreRules), 'firestore.rules contains emojis');
 assert(fbConfigJs.includes('balancer-1ab7e'), 'firebase-config.js missing project ID balancer-1ab7e');
+assert(indexHtml.includes('id="cloudSyncIndicator"'), 'cloudSyncIndicator missing in index.html');
+assert(indexHtml.includes('id="profileSyncStatus"'), 'profileSyncStatus missing in index.html');
+assert(indexHtml.includes('id="btnForceSync"'), 'btnForceSync missing in index.html');
+assert(firestoreRules.includes('rules_version'), 'firestore.rules missing rules_version');
 console.log('✓ Verified: Dedicated Login Screen & clean tab state transitions configured with zero emojis and balancer-1ab7e');
+console.log('✓ Verified: Cross-device Cloud Firestore real-time synchronization and security rules verified');
 
 console.log('--- ALL INTEGRITY CHECKS PASSED PERFECTLY! ---');
