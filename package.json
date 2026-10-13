@@ -1,0 +1,20 @@
+{
+  "name": "balancer",
+  "version": "1.0.0",
+  "description": "Agent Banking and Mobile Money Capital Balancing Web Application",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node tests/calculator.test.js && node tests/store.test.js && node tests/app_integrity.test.js"
+  },
+  "keywords": [
+    "agent-banking",
+    "mobile-money",
+    "balancer",
+    "ugx",
+    "fintech"
+  ],
+  "author": "",
+  "license": "ISC"
+}

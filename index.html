@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Balancer - Agent Banking & Mobile Money</title>
+  <meta name="description" content="Capital balancing tool for mobile money and agent banking businesses">
+  <meta name="theme-color" content="#0284c7">
+  <!-- Favicon using provided Balancer Logo -->
+  <link rel="icon" type="image/svg+xml" href="assets/balancer-logo.svg?v=20261013-4">
+  <link rel="alternate icon" type="image/png" href="assets/balancer-logo.png?v=20261013-4">
+  <!-- Industry-Standard Typography: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=20261013-4">
+</head>
+<body>
+
+  <!-- Auth Loading Splash (Shown during initial session validation) -->
+  <div id="authLoadingSplash" class="auth-loading-splash">
+    <img src="assets/balancer-logo.svg?v=20261013-4" alt="Balancer" class="auth-splash-logo">
+    <div style="text-align: center;">
+      <h2 style="font-family: var(--font-brand); font-size: 1.5rem; font-weight: 800; margin-bottom: 4px;">Balancer</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">Verifying session credentials...</p>
+    </div>
+    <div class="auth-splash-spinner"></div>
+  </div>
+
+  <!-- Dedicated Login & Account Screen (Active when signed out) -->
+  <div id="authGateScreen" class="auth-gate-screen" style="display: none;">
+    <div class="auth-gate-topbar">
+      <button id="loginThemeToggleBtn" class="btn btn-outline btn-icon theme-toggle-btn" title="Toggle Light/Dark Theme">
+        <svg class="ui-svg theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg class="ui-svg theme-icon-sun" style="display:none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="auth-gate-card">
+      <div class="auth-gate-header">
+        <img src="assets/balancer-logo.svg?v=20261013-4" alt="Balancer Logo" class="auth-gate-logo">
+        <h1 class="auth-gate-title">Balancer</h1>
+        <p class="auth-gate-subtitle">Agent Banking & Mobile Money</p>
+      </div>
+
+      <div class="auth-gate-body">
+        <!-- Auth Tabs (Pure class-based styling without inline border styles) -->
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab active" data-tab="signin">Sign In</button>
+          <button type="button" class="auth-tab" data-tab="signup">Create Account</button>
+          <button type="button" class="auth-tab" data-tab="reset">Reset</button>
+        </div>
+
+        <!-- Panel 1: Sign In -->
+        <div class="auth-panel" data-panel="signin">
+          <form id="formSignIn">
+            <div class="auth-form-group">
+              <label for="inputSignInEmail">Email Address</label>
+              <div class="auth-input-wrapper">
+                <svg class="auth-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                <input type="email" id="inputSignInEmail" class="auth-input" placeholder="agent@example.com" required autocomplete="email">
+              </div>
+            </div>
+
+            <div class="auth-form-group">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label for="inputSignInPassword" style="margin: 0;">Password</label>
+                <a href="#" class="link-switch-auth" data-target="reset" style="font-size: 0.78rem; color: var(--primary); text-decoration: none;">Forgot password?</a>
+              </div>
+              <div class="auth-input-wrapper">
+                <svg class="auth-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <input type="password" id="inputSignInPassword" class="auth-input" placeholder="Enter your password" required autocomplete="current-password">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary auth-submit-btn">
+              <span>Sign In to Balancer</span>
+            </button>
+          </form>
+
+          <p class="auth-switch-link">
+            Don't have an account yet? <a href="#" class="link-switch-auth" data-target="signup">Create an account</a>
+          </p>
+        </div>
+
+        <!-- Panel 2: Create Account -->
+        <div class="auth-panel" data-panel="signup" style="display: none;">
+          <form id="formSignUp">
+            <div class="auth-form-group">
+              <label for="inputSignUpEmail">Email Address</label>
+              <div class="auth-input-wrapper">
+                <svg class="auth-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                <input type="email" id="inputSignUpEmail" class="auth-input" placeholder="agent@example.com" required autocomplete="email">
+              </div>
+            </div>
+
+            <div class="auth-form-group">
+              <label for="inputSignUpPassword">Password (at least 6 characters)</label>
+              <div class="auth-input-wrapper">
+                <svg class="auth-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <input type="password" id="inputSignUpPassword" class="auth-input" placeholder="Create password" required autocomplete="new-password">
+              </div>
+            </div>
+
+            <div class="auth-form-group">
+              <label for="inputSignUpConfirmPassword">Confirm Password</label>
+              <div class="auth-input-wrapper">
+                <svg class="auth-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <input type="password" id="inputSignUpConfirmPassword" class="auth-input" placeholder="Re-type password" required autocomplete="new-password">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary auth-submit-btn">
+              <span>Create Account</span>
+            </button>
+          </form>
+
+          <p class="auth-switch-link">
+            Already have an account? <a href="#" class="link-switch-auth" data-target="signin">Sign in here</a>
+          </p>
+        </div>
+
+        <!-- Panel 3: Reset Password -->
+        <div class="auth-panel" data-panel="reset" style="display: none;">
+          <form id="formReset">
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.45;">
+              Enter your registered account email and we will send a password reset link.
+            </p>
+            <div class="auth-form-group">
+              <label for="inputResetEmail">Account Email</label>
+              <div class="auth-input-wrapper">
+                <svg class="auth-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                <input type="email" id="inputResetEmail" class="auth-input" placeholder="agent@example.com" required autocomplete="email">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary auth-submit-btn">
+              <span>Send Password Reset Link</span>
+            </button>
+          </form>
+
+          <p class="auth-switch-link">
+            Remembered password? <a href="#" class="link-switch-auth" data-target="signin">Back to Sign In</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-gate-footer">
+      <p>Secure Agent Banking &bull; Protected by Firebase Authentication</p>
+    </div>
+  </div>
+
+  <!-- App Root (Enclosing the main balancing application, revealed upon login) -->
+  <div id="appRoot" style="display: none;">
+
+    <!-- App Header -->
+    <header class="app-header">
+    <div class="header-container">
+      <div class="brand-section">
+        <div class="brand-icon">
+          <img src="assets/balancer-logo.svg?v=20261013-4" alt="Balancer Logo" class="brand-logo-img">
+        </div>
+        <div>
+          <h1 class="brand-title">Balancer</h1>
+          <p class="brand-subtitle">Agent Banking & Mobile Money</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="themeToggleBtn" class="btn btn-outline btn-icon" title="Toggle Light/Dark Theme">
+          <svg class="ui-svg theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg class="ui-svg theme-icon-sun" style="display:none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+        <button id="quickResetBtn" class="btn btn-secondary btn-sm" title="Clear current form to zero">
+          <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          <span>Reset Form</span>
+        </button>
+        <button id="btnAuthHeader" class="btn btn-outline btn-sm auth-header-btn" title="Sign in or view account">
+          <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span id="authHeaderLabel">Sign In</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="app-nav">
+    <div class="nav-container">
+      <button class="nav-tab active" data-tab="balancing">
+        <img src="assets/capital.png?v=20261013-4" class="nav-icon" alt="">
+        <span>Balancing</span>
+      </button>
+      <button class="nav-tab" data-tab="history">
+        <img src="assets/history.png?v=20261013-4" class="nav-icon" alt="">
+        <span>History</span>
+        <span id="historyBadge" class="nav-badge">0</span>
+      </button>
+      <button class="nav-tab" data-tab="ledger">
+        <img src="assets/ledger.png?v=20261013-4" class="nav-icon" alt="">
+        <span>Ledger</span>
+      </button>
+      <button class="nav-tab" data-tab="settings">
+        <svg class="ui-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span>Settings</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="main-container">
+
+    <!-- TAB 1: BALANCING FORM -->
+    <div id="tab-balancing" class="tab-view active">
+      
+      <!-- Executive Hero Overview Grid (Baseline Capital + Live Status) -->
+      <div class="hero-overview-grid">
+        <!-- Target Capital Banner -->
+        <section class="target-capital-card">
+          <div class="target-header">
+            <span class="target-tag">
+              <img src="assets/target.png?v=20261013-4" class="target-icon-img" alt="">
+              <span>Baseline Capital</span>
+            </span>
+            <span id="targetSourceDisplay" class="target-source-text">
+              Source: Preset Capital
+            </span>
+          </div>
+          <div class="target-value-container">
+            <span class="target-currency">UGX</span>
+            <span id="targetAmountDisplay" class="target-amount">0</span>
+          </div>
+          <div class="target-actions">
+            <button id="btnSwitchCapitalSource" class="btn btn-secondary btn-sm">
+              <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 3 21 3 21 8"></polyline>
+                <line x1="4" y1="20" x2="21" y2="3"></line>
+                <polyline points="21 16 21 21 16 21"></polyline>
+                <line x1="15" y1="15" x2="21" y2="21"></line>
+                <line x1="4" y1="4" x2="9" y2="9"></line>
+              </svg>
+              <span>Switch Source</span>
+            </button>
+            <button id="btnEditTargetCapital" class="btn btn-secondary btn-sm">
+              <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+              <span>Edit Target</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Executive Status Live Card -->
+        <section class="executive-status-card">
+          <div class="exec-header">
+            <span class="exec-title">Live Session Overview</span>
+            <span id="heroStatusPill" class="balance-status-badge status-balanced">
+              <span class="status-badge-icon">
+                <svg class="status-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+              <span id="heroStatusText">Balanced (UGX 0)</span>
+            </span>
+          </div>
+          <div class="exec-metrics-row">
+            <div class="exec-metric">
+              <span class="exec-metric-label">Net Actual Capital</span>
+              <span id="heroNetCapital" class="exec-metric-val">UGX 0</span>
+            </div>
+            <div class="exec-metric">
+              <span class="exec-metric-label">Variance</span>
+              <span id="heroVariance" class="exec-metric-val">UGX 0</span>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; margin-top: 10px;">
+            <button id="btnHeroSave" class="btn btn-primary btn-sm" style="flex: 1;">
+              <img src="assets/save-balancing-session.png?v=20261013-4" class="btn-icon-img" alt="">
+              <span>Save Session</span>
+            </button>
+            <button id="btnHeroShare" class="btn btn-secondary btn-sm">
+              <img src="assets/share.png?v=20261013-4" class="btn-icon-img" alt="">
+              <span>WhatsApp</span>
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Float Section -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">
+              <img src="assets/capital.png?v=20261013-4" class="section-icon" alt="">
+              <span>Float Balances</span>
+            </h2>
+            <p class="card-subtitle">Telecom SIMs, Bank Agent accounts & Aggregators</p>
+          </div>
+          <span id="floatSubtotalBadge" class="section-badge">UGX 0</span>
+        </div>
+
+        <div id="floatInputsContainer" class="input-grid">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <div class="subtotal-banner">
+          <span>Total Float Counted:</span>
+          <span id="floatSubtotalText" class="subtotal-amount">UGX 0</span>
+        </div>
+      </section>
+
+      <!-- Cash in Drawer/Till Section -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">
+              <img src="assets/physical-money.png?v=20261013-4" class="section-icon" alt="">
+              <span>Physical Cash</span>
+            </h2>
+            <p class="card-subtitle">Cash physically present in drawer, safe, or till</p>
+          </div>
+          <button id="btnOpenDenominations" class="btn btn-secondary btn-sm">
+            <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+              <line x1="8" y1="6" x2="16" y2="6"></line>
+              <line x1="8" y1="10" x2="8.01" y2="10"></line>
+              <line x1="12" y1="10" x2="12.01" y2="10"></line>
+              <line x1="16" y1="10" x2="16.01" y2="10"></line>
+              <line x1="8" y1="14" x2="8.01" y2="14"></line>
+              <line x1="12" y1="14" x2="12.01" y2="14"></line>
+              <line x1="16" y1="14" x2="16.01" y2="14"></line>
+              <line x1="8" y1="18" x2="8.01" y2="18"></line>
+              <line x1="12" y1="18" x2="12.01" y2="18"></line>
+              <line x1="16" y1="18" x2="16.01" y2="18"></line>
+            </svg>
+            <span>Denominations Counter</span>
+          </button>
+        </div>
+
+        <div class="input-item" style="max-width: 450px;">
+          <div class="input-item-header">
+            <label for="inputCash" class="input-label">Physical Cash in Till</label>
+          </div>
+          <div class="money-input-wrapper">
+            <span class="input-currency-prefix">UGX</span>
+            <input 
+              type="text" 
+              inputmode="numeric" 
+              pattern="[0-9,]*" 
+              id="inputCash" 
+              class="money-input" 
+              value="0"
+              autocomplete="off"
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- Money on Personal Phones Section -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">
+              <img src="assets/money-on-phone.png?v=20261013-4" class="section-icon" alt="">
+              <span>Money on Personal Phones</span>
+            </h2>
+            <p class="card-subtitle">Float or business money held on agents' personal lines</p>
+          </div>
+          <span id="agentsSubtotalBadge" class="section-badge">UGX 0</span>
+        </div>
+
+        <div id="agentInputsContainer" class="input-grid-2">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <div class="subtotal-banner">
+          <span>Total Money on Personal Phones:</span>
+          <span id="agentsSubtotalText" class="subtotal-amount">UGX 0</span>
+        </div>
+      </section>
+
+      <!-- Commissions Section (Toggleable) -->
+      <!-- Note: Commission earned is NOT considered money that belongs to the business, so it is deducted if included -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">
+              <svg class="ui-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <span>Commissions Earned</span>
+            </h2>
+            <p class="card-subtitle">Commissions earned do not belong to the business (deducted from counted capital)</p>
+          </div>
+          <span id="commissionsSubtotalBadge" class="section-badge">-UGX 0</span>
+        </div>
+
+        <div class="toggle-switch-container" id="commissionToggleWrapper">
+          <input type="checkbox" id="toggleCommission" style="display: none;">
+          <div class="toggle-switch"></div>
+          <div>
+            <span class="toggle-label">Include Earned Commissions</span>
+            <p class="toggle-description">Enable to deduct earned telecom commissions from business capital</p>
+          </div>
+        </div>
+
+        <div id="commissionFieldsWrapper" class="collapsible-content collapsed">
+          <div id="commissionInputsContainer" class="input-grid-2" style="margin-top: 14px;">
+            <!-- Populated dynamically via JS -->
+          </div>
+          <div class="subtotal-banner" style="background: var(--warning-bg); color: var(--warning);">
+            <span>Total Commissions (Deducted - Not Business Capital):</span>
+            <span id="commissionsSubtotalText" class="subtotal-amount">-UGX 0</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stakeholder Money Taken Out Temporarily (Toggleable / Expandable) -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">
+              <img src="assets/money-flow-money-out-and-money-in.png?v=20261013-4" class="section-icon" alt="">
+              <span>Money Taken Out by Stakeholders (Drawings)</span>
+            </h2>
+            <p class="card-subtitle">Temporary withdrawals. Added back to business capital.</p>
+          </div>
+          <span id="stakeholderOutSubtotalBadge" class="section-badge">+UGX 0</span>
+        </div>
+
+        <div class="toggle-switch-container" id="stakeholderOutToggleWrapper">
+          <input type="checkbox" id="toggleStakeholderOut" style="display: none;">
+          <div class="toggle-switch"></div>
+          <div>
+            <span class="toggle-label">Include Money Taken Out</span>
+            <p class="toggle-description">Enable if any stakeholder took funds out during this shift</p>
+          </div>
+        </div>
+
+        <div id="stakeholderOutFieldsWrapper" class="collapsible-content collapsed">
+          <div id="stakeholderOutInputsContainer" class="input-grid-2" style="margin-top: 14px;">
+            <!-- Populated dynamically via JS -->
+          </div>
+          <div class="subtotal-banner" style="background: var(--info-bg); color: var(--info);">
+            <span>Total Money Taken Out (Added Back to Capital):</span>
+            <span id="stakeholderOutSubtotalText" class="subtotal-amount">+UGX 0</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stakeholder Money Added Temporarily (Toggleable / Expandable) -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">
+              <img src="assets/money-flow-money-out-and-money-in.png?v=20261013-4" class="section-icon" alt="">
+              <span>Money Added by Stakeholders (Injections)</span>
+            </h2>
+            <p class="card-subtitle">Temporary injections. Deducted from calculated capital.</p>
+          </div>
+          <span id="stakeholderInSubtotalBadge" class="section-badge">-UGX 0</span>
+        </div>
+
+        <div class="toggle-switch-container" id="stakeholderInToggleWrapper">
+          <input type="checkbox" id="toggleStakeholderIn" style="display: none;">
+          <div class="toggle-switch"></div>
+          <div>
+            <span class="toggle-label">Include Money Added</span>
+            <p class="toggle-description">Enable if any stakeholder injected temporary cash or float</p>
+          </div>
+        </div>
+
+        <div id="stakeholderInFieldsWrapper" class="collapsible-content collapsed">
+          <div id="stakeholderInInputsContainer" class="input-grid-2" style="margin-top: 14px;">
+            <!-- Populated dynamically via JS -->
+          </div>
+          <div class="subtotal-banner" style="background: var(--warning-bg); color: var(--warning);">
+            <span>Total Money Injected (Deducted from Capital):</span>
+            <span id="stakeholderInSubtotalText" class="subtotal-amount">-UGX 0</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Notes & Session Remarks -->
+      <section class="card">
+        <h2 class="card-title" style="margin-bottom: 8px;">
+          <svg class="ui-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+          <span>Balancing Notes (Optional)</span>
+        </h2>
+        <textarea 
+          id="sessionNotes" 
+          rows="2" 
+          placeholder="E.g. Morning balancing, Kato on till, pending customer deposit reversal..."
+          style="width: 100%; padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-family: inherit; font-size: 0.9rem; resize: vertical; background: var(--bg-input); color: var(--text-main);"
+        ></textarea>
+      </section>
+
+      <!-- Live Calculation & Mathematical Breakdown Card -->
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <img src="assets/view-breakdown.png?v=20261013-4" class="section-icon" alt="">
+            <span>Live Balancing Breakdown</span>
+          </h2>
+          <span id="breakdownStatusPill" class="balance-status-badge status-balanced">
+            <span class="status-badge-icon">
+              <svg class="status-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </span>
+            <span id="breakdownStatusText">Balanced (UGX 0)</span>
+          </span>
+        </div>
+
+        <div class="calculation-explainer">
+          <div class="calc-row">
+            <span class="calc-label">Counted Float:</span>
+            <span id="explainerFloat" class="calc-val">UGX 0</span>
+          </div>
+          <div class="calc-row">
+            <span class="calc-label">Physical Cash:</span>
+            <span id="explainerCash" class="calc-val">UGX 0</span>
+          </div>
+          <div class="calc-row">
+            <span class="calc-label">Personal Phones:</span>
+            <span id="explainerPhones" class="calc-val">UGX 0</span>
+          </div>
+          <div class="calc-row">
+            <span class="calc-label" style="font-weight: 600;">Total Assets Counted in Shop:</span>
+            <span id="explainerCountedTotal" class="calc-val" style="font-weight: 700;">UGX 0</span>
+          </div>
+          <div class="calc-row" id="explainerOutRow" style="color: var(--info); display: none;">
+            <span class="calc-label">(+) Stakeholder Money Taken Out:</span>
+            <span id="explainerStakeholderOut" class="calc-val">+UGX 0</span>
+          </div>
+          <div class="calc-row" id="explainerInRow" style="color: var(--warning); display: none;">
+            <span class="calc-label">(-) Stakeholder Money Injected:</span>
+            <span id="explainerStakeholderIn" class="calc-val">-UGX 0</span>
+          </div>
+          <div class="calc-row" id="explainerCommissionRow" style="color: var(--warning); display: none;">
+            <span class="calc-label">(-) Commission Earned (Not business money):</span>
+            <span id="explainerCommission" class="calc-val">-UGX 0</span>
+          </div>
+          <div class="calc-row highlight">
+            <span class="calc-label">Net Actual Business Capital:</span>
+            <span id="explainerNetCapital" class="calc-val">UGX 0</span>
+          </div>
+          <div class="calc-row">
+            <span class="calc-label">Target Baseline Capital:</span>
+            <span id="explainerTargetCapital" class="calc-val">UGX 0</span>
+          </div>
+          <div class="calc-row highlight" style="background: var(--bg-card); padding: 12px 10px; border-radius: var(--radius-sm);">
+            <span class="calc-label" style="font-size: 1.1rem;">Final Balancing Result:</span>
+            <span id="explainerVariance" class="calc-val" style="font-size: 1.2rem;">UGX 0</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap;">
+          <button id="btnSaveBalancingPrimary" class="btn btn-primary btn-lg" style="flex: 1;">
+            <img src="assets/save-balancing-session.png?v=20261013-4" class="btn-icon-img" alt="">
+            <span>Save Balancing Session</span>
+          </button>
+          <button id="btnShareWhatsApp" class="btn btn-secondary btn-lg">
+            <img src="assets/share.png?v=20261013-4" class="btn-icon-img" alt="">
+            <span>Share WhatsApp Report</span>
+          </button>
+          <button id="btnPrintSlip" class="btn btn-outline btn-lg">
+            <img src="assets/print.png?v=20261013-4" class="btn-icon-img" alt="">
+            <span>Print Slip</span>
+          </button>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- TAB 2: HISTORY SECTION -->
+    <div id="tab-history" class="tab-view">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">
+              <img src="assets/history.png?v=20261013-4" class="section-icon" alt="">
+              <span>Balancing Records & History</span>
+            </h2>
+            <p class="card-subtitle">Permanent archive of all previous balancing sessions</p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button id="btnExportCSV" class="btn btn-secondary btn-sm">
+              <img src="assets/csv.png?v=20261013-4" class="btn-icon-img" alt="">
+              <span>Export CSV</span>
+            </button>
+            <button id="btnClearHistory" class="btn btn-danger btn-sm">
+              <img src="assets/bin.png?v=20261013-4" class="btn-icon-img" alt="">
+              <span>Clear History</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter bar -->
+        <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
+          <div style="position: relative; flex: 1; min-width: 200px;">
+            <input 
+              type="text" 
+              id="historySearch" 
+              placeholder="Search notes or date..." 
+              style="width: 100%; padding: 8px 12px 8px 34px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-input); color: var(--text-main);"
+            >
+            <svg class="ui-svg-sm" style="position: absolute; left: 10px; top: 11px; color: var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
+          <select 
+            id="historyFilterStatus" 
+            style="padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-input); color: var(--text-main); font-weight: 500;"
+          >
+            <option value="all">All Statuses</option>
+            <option value="balanced">Balanced</option>
+            <option value="surplus">Surplus</option>
+            <option value="shortage">Shortage</option>
+          </select>
+        </div>
+
+        <!-- History Items List Container -->
+        <div id="historyListContainer">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: STAKEHOLDER & AGENT LEDGER -->
+    <div id="tab-ledger" class="tab-view">
+      
+      <!-- Stakeholder Ledger Card -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">
+              <img src="assets/ledger.png?v=20261013-4" class="section-icon" alt="">
+              <span>Stakeholders Ledger</span>
+            </h2>
+            <p class="card-subtitle">Cumulative temporary money taken out vs injected</p>
+          </div>
+        </div>
+        <div class="ledger-table-wrapper">
+          <table class="ledger-table">
+            <thead>
+              <tr>
+                <th>Stakeholder</th>
+                <th>Total Money Taken Out</th>
+                <th>Total Money Injected</th>
+                <th>Net Balance</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="stakeholderLedgerTableBody">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Agents Ledger Card -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">
+              <img src="assets/money-on-phone.png?v=20261013-4" class="section-icon" alt="">
+              <span>Agents Personal Phones Ledger</span>
+            </h2>
+            <p class="card-subtitle">Latest recorded amounts held on agent personal lines</p>
+          </div>
+        </div>
+        <div class="ledger-table-wrapper">
+          <table class="ledger-table">
+            <thead>
+              <tr>
+                <th>Agent</th>
+                <th>Latest Recorded Balance</th>
+                <th>Balancing Sessions Recorded</th>
+              </tr>
+            </thead>
+            <tbody id="agentLedgerTableBody">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- TAB 4: SETTINGS SECTION -->
+    <div id="tab-settings" class="tab-view">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">
+              <svg class="ui-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+              <span>App Configuration & Parameters</span>
+            </h2>
+            <p class="card-subtitle">Manage float accounts, stakeholders, agents, commissions, and baseline capital</p>
+          </div>
+          <button id="btnSaveSettings" class="btn btn-primary">
+            <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            <span>Save Settings</span>
+          </button>
+        </div>
+
+        <!-- Section 1: Float Balances (Parameters) -->
+        <div class="settings-section-card">
+          <div class="settings-section-header">
+            <div>
+              <h3 class="settings-section-title">
+                <img src="assets/capital.png?v=20261013-4" class="section-icon" alt="">
+                <span>Float Balances & Parameters</span>
+                <span id="floatCountBadge" class="nav-badge">13 Active</span>
+              </h3>
+              <p class="settings-section-subtitle">
+                Add, remove, or toggle float accounts (SIMs, bank lines, aggregators) that appear on the balancing form.
+              </p>
+            </div>
+            <button id="btnResetFloatDefaults" class="btn btn-outline btn-sm" title="Restore original 13 float accounts">
+              <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="1 4 1 10 7 10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+              </svg>
+              <span>Restore Float Defaults</span>
+            </button>
+          </div>
+
+          <!-- Add Float Account Form -->
+          <div class="parameter-add-bar">
+            <div style="flex: 2; min-width: 200px;">
+              <input 
+                type="text" 
+                id="newFloatName" 
+                class="settings-add-input" 
+                placeholder="Account name e.g. MTN 4, ABSA Bank, Wave..."
+                autocomplete="off"
+              >
+            </div>
+            <div style="flex: 1; min-width: 140px;">
+              <select id="newFloatCategory" class="settings-select">
+                <option value="telecom">Telecom SIM</option>
+                <option value="bank">Bank Agent Line</option>
+                <option value="aggregator">Aggregator</option>
+                <option value="other">Other Account</option>
+              </select>
+            </div>
+            <button id="btnAddFloatAccount" class="btn btn-primary btn-sm">
+              <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>Add Parameter</span>
+            </button>
+          </div>
+
+          <!-- Float Accounts List -->
+          <div id="settingsFloatAccountsGrid" class="parameter-grid">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Section 2: Stakeholders -->
+        <div class="settings-section-card">
+          <div class="settings-section-header">
+            <div>
+              <h3 class="settings-section-title">
+                <img src="assets/money-flow-money-out-and-money-in.png?v=20261013-4" class="section-icon" alt="">
+                <span>Stakeholders (Drawings & Injections)</span>
+                <span id="stakeholdersCountBadge" class="nav-badge">4 Active</span>
+              </h3>
+              <p class="settings-section-subtitle">
+                Create or remove stakeholders. When enabled via their respective toggles, they take inputs for money taken out or injected.
+              </p>
+            </div>
+            <button id="btnResetStakeholdersDefaults" class="btn btn-outline btn-sm" title="Restore original 4 stakeholders">
+              <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="1 4 1 10 7 10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+              </svg>
+              <span>Restore Stakeholders Defaults</span>
+            </button>
+          </div>
+
+          <!-- Add Stakeholder Form -->
+          <div class="parameter-add-bar">
+            <div style="flex: 1; min-width: 220px;">
+              <input 
+                type="text" 
+                id="newStakeholderName" 
+                class="settings-add-input" 
+                placeholder="Stakeholder real name e.g. Director Paul, Investor Grace..."
+                autocomplete="off"
+              >
+            </div>
+            <button id="btnAddStakeholder" class="btn btn-primary btn-sm">
+              <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>Create Stakeholder</span>
+            </button>
+          </div>
+
+          <!-- Stakeholders List -->
+          <div id="settingsStakeholdersGrid" class="parameter-grid">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Section 3: Agents (Personal Phone Lines) -->
+        <div class="settings-section-card">
+          <div class="settings-section-header">
+            <div>
+              <h3 class="settings-section-title">
+                <img src="assets/money-on-phone.png?v=20261013-4" class="section-icon" alt="">
+                <span>Agents with Personal Phones</span>
+                <span id="agentsCountBadge" class="nav-badge">3 Active</span>
+              </h3>
+              <p class="settings-section-subtitle">
+                Create or remove agents who hold business money or float on personal phone lines.
+              </p>
+            </div>
+            <button id="btnResetAgentsDefaults" class="btn btn-outline btn-sm" title="Restore original 3 agents">
+              <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="1 4 1 10 7 10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+              </svg>
+              <span>Restore Agents Defaults</span>
+            </button>
+          </div>
+
+          <!-- Add Agent Form -->
+          <div class="parameter-add-bar">
+            <div style="flex: 1; min-width: 220px;">
+              <input 
+                type="text" 
+                id="newAgentName" 
+                class="settings-add-input" 
+                placeholder="Agent real name e.g. Amina, Kato, Peter..."
+                autocomplete="off"
+              >
+            </div>
+            <button id="btnAddAgent" class="btn btn-primary btn-sm">
+              <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>Create Agent</span>
+            </button>
+          </div>
+
+          <!-- Agents List -->
+          <div id="settingsAgentsGrid" class="parameter-grid">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Section 4: Telecom Commission Accounts -->
+        <div class="settings-section-card">
+          <div class="settings-section-header">
+            <div>
+              <h3 class="settings-section-title">
+                <svg class="ui-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <span>Telecom Commission Lines</span>
+                <span id="commissionsCountBadge" class="nav-badge">5 Active</span>
+              </h3>
+              <p class="settings-section-subtitle">
+                Lines deducted when earned commissions are enabled (not considered business capital).
+              </p>
+            </div>
+            <button id="btnResetCommissionsDefaults" class="btn btn-outline btn-sm" title="Restore original 5 commission lines">
+              <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="1 4 1 10 7 10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+              </svg>
+              <span>Restore Commission Defaults</span>
+            </button>
+          </div>
+
+          <!-- Add Commission Form -->
+          <div class="parameter-add-bar">
+            <div style="flex: 2; min-width: 200px;">
+              <input 
+                type="text" 
+                id="newCommissionName" 
+                class="settings-add-input" 
+                placeholder="Commission Line name e.g. MTN 4 Commission..."
+                autocomplete="off"
+              >
+            </div>
+            <div style="flex: 1; min-width: 140px;">
+              <select id="newCommissionProvider" class="settings-select">
+                <option value="mtn">MTN</option>
+                <option value="airtel">Airtel</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <button id="btnAddCommissionAccount" class="btn btn-primary btn-sm">
+              <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>Add Commission Line</span>
+            </button>
+          </div>
+
+          <!-- Commissions List -->
+          <div id="settingsCommissionsGrid" class="parameter-grid">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Section 5: Baseline Capital Settings -->
+        <div class="settings-section-card">
+          <h3 class="settings-section-title" style="margin-bottom: 8px;">Baseline Capital Configuration</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 10px;">
+            <div class="input-item">
+              <label for="settingPresetCapital" class="input-label">Default Preset Capital</label>
+              <div class="money-input-wrapper" style="margin-top: 6px;">
+                <span class="input-currency-prefix">UGX</span>
+                <input 
+                  type="text" 
+                  inputmode="numeric" 
+                  pattern="[0-9,]*" 
+                  id="settingPresetCapital" 
+                  class="money-input" 
+                  value="20,000,000"
+                >
+              </div>
+            </div>
+
+            <div class="input-item">
+              <label class="input-label">Default Target Source</label>
+              <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; cursor: pointer;">
+                  <input type="radio" name="settingCapitalSource" value="last" checked>
+                  Use capital total from last balancing (Recommended)
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; cursor: pointer;">
+                  <input type="radio" name="settingCapitalSource" value="preset">
+                  Always use preset capital balance
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 6: Authentication & Cloud Profile -->
+        <div class="settings-section-card">
+          <div class="settings-section-header">
+            <div>
+              <h3 class="settings-section-title">
+                <svg class="ui-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <span>Authentication & Cloud Profile</span>
+              </h3>
+              <p class="settings-section-subtitle">
+                Sign in with your email account to secure records and access your business data.
+              </p>
+            </div>
+            <button id="btnSettingsOpenAuth" class="btn btn-primary btn-sm">
+              Sign In / Register
+            </button>
+          </div>
+          <div style="padding: 12px 14px; background: var(--bg-subtle); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+            <div id="settingsAuthStatus">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="status-pill status-surplus" style="background: var(--bg-card); color: var(--text-muted); border-color: var(--border); font-size: 0.8rem; padding: 3px 8px;">Offline Local Mode</span>
+                <span style="font-size: 0.85rem; color: var(--text-muted);">Stored safely in browser storage</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Data Backup & Demo Utilities -->
+        <h3 style="font-size: 1rem; margin: 28px 0 8px 0; color: var(--text-muted);">Data Backup & Tools</h3>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+          <button id="btnLoadDemoData" class="btn btn-secondary">
+            <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>Load Demo Sample Data</span>
+          </button>
+          <button id="btnExportJSON" class="btn btn-outline">
+            <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Export Full Backup (.json)</span>
+          </button>
+          <button id="btnImportJSON" class="btn btn-outline">
+            <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <span>Restore from Backup (.json)</span>
+          </button>
+          <button id="btnResetAllDefaults" class="btn btn-outline" style="color: var(--danger); border-color: var(--danger-border);">
+            <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="1 4 1 10 7 10"></polyline>
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+            </svg>
+            <span>Restore All Original Defaults</span>
+          </button>
+          <input type="file" id="importFileInput" accept=".json" style="display: none;">
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Sticky Bottom Summary Bar -->
+  <footer class="sticky-balance-bar">
+    <div class="sticky-balance-container">
+      <div id="stickyStatusBadge" class="balance-status-badge status-balanced">
+        <span class="status-badge-icon">
+          <svg class="status-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </span>
+        <span id="stickyStatusText">Balanced (UGX 0)</span>
+      </div>
+
+      <div class="balance-metrics-summary">
+        <div class="metric-item">
+          <span class="metric-label">Target Capital</span>
+          <span id="stickyTargetCapital" class="metric-val">UGX 0</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-label">Net Actual Capital</span>
+          <span id="stickyNetCapital" class="metric-val">UGX 0</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-label">Variance</span>
+          <span id="stickyVariance" class="metric-val">UGX 0</span>
+        </div>
+      </div>
+
+      <div class="sticky-action-buttons">
+        <button id="btnStickySave" class="btn btn-primary">
+          <img src="assets/save-balancing-session.png?v=20261013-4" class="btn-icon-img" alt="">
+          <span>Save Session</span>
+        </button>
+        <button id="btnStickyShare" class="btn btn-secondary">
+          <img src="assets/share.png?v=20261013-4" class="btn-icon-img" alt="">
+          <span>WhatsApp</span>
+        </button>
+      </div>
+    </div>
+  </footer>
+  </div> <!-- /#appRoot -->
+
+  <!-- MODAL: Cash Denominations Calculator -->
+  <div id="modalDenominations" class="modal-backdrop">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 class="modal-title">Cash Denominations Counter</h3>
+        <button class="btn btn-outline btn-sm modal-close" style="line-height: 1; padding: 4px 8px;">
+          <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+          Enter the quantity of each Uganda Shilling banknote and coin counted:
+        </p>
+        <div class="denominations-grid">
+          <div class="denom-item">
+            <span class="denom-label">50,000 UGX</span>
+            <input type="text" inputmode="numeric" class="denom-input" id="denom50k" value="0">
+          </div>
+          <div class="denom-item">
+            <span class="denom-label">20,000 UGX</span>
+            <input type="text" inputmode="numeric" class="denom-input" id="denom20k" value="0">
+          </div>
+          <div class="denom-item">
+            <span class="denom-label">10,000 UGX</span>
+            <input type="text" inputmode="numeric" class="denom-input" id="denom10k" value="0">
+          </div>
+          <div class="denom-item">
+            <span class="denom-label">5,000 UGX</span>
+            <input type="text" inputmode="numeric" class="denom-input" id="denom5k" value="0">
+          </div>
+          <div class="denom-item">
+            <span class="denom-label">2,000 UGX</span>
+            <input type="text" inputmode="numeric" class="denom-input" id="denom2k" value="0">
+          </div>
+          <div class="denom-item">
+            <span class="denom-label">1,000 UGX</span>
+            <input type="text" inputmode="numeric" class="denom-input" id="denom1k" value="0">
+          </div>
+          <div class="denom-item">
+            <span class="denom-label">Coins (Total)</span>
+            <input type="text" inputmode="numeric" class="denom-input" id="denomCoins" value="0">
+          </div>
+        </div>
+
+        <div class="subtotal-banner" style="margin-top: 16px;">
+          <span>Calculated Cash Total:</span>
+          <span id="denomCalculatedTotal" class="subtotal-amount">UGX 0</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary modal-close">Cancel</button>
+        <button id="btnApplyDenominations" class="btn btn-primary">Apply to Cash in Till</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Edit Target Capital -->
+  <div id="modalEditTarget" class="modal-backdrop">
+    <div class="modal-window" style="max-width: 480px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Adjust Target Capital</h3>
+        <button class="btn btn-outline btn-sm modal-close" style="line-height: 1; padding: 4px 8px;">
+          <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+          Set the expected baseline capital for this session:
+        </p>
+        <div class="money-input-wrapper">
+          <span class="input-currency-prefix">UGX</span>
+          <input 
+            type="text" 
+            inputmode="numeric" 
+            pattern="[0-9,]*" 
+            id="modalInputTargetCapital" 
+            class="money-input" 
+            value="0"
+          >
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 14px;">
+          <button id="btnTargetUsePreset" class="btn btn-secondary btn-sm" style="flex: 1;">Use Preset Capital</button>
+          <button id="btnTargetUseLast" class="btn btn-secondary btn-sm" style="flex: 1;">Use Last Balancing</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary modal-close">Cancel</button>
+        <button id="btnApplyTargetCapital" class="btn btn-primary">Save Target Capital</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: View History Record Details -->
+  <div id="modalHistoryDetails" class="modal-backdrop">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 class="modal-title">Balancing Session Breakdown</h3>
+        <button class="btn btn-outline btn-sm modal-close" style="line-height: 1; padding: 4px 8px;">
+          <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" id="modalHistoryContent">
+        <!-- Injected via JS -->
+      </div>
+      <div class="modal-footer">
+        <button id="btnModalShareWhatsApp" class="btn btn-secondary">
+          <img src="assets/share.png?v=20261013-4" class="btn-icon-img" alt="">
+          <span>Share</span>
+        </button>
+        <button id="btnModalPrintSlip" class="btn btn-outline">
+          <img src="assets/print.png?v=20261013-4" class="btn-icon-img" alt="">
+          <span>Print Slip</span>
+        </button>
+        <button class="btn btn-primary modal-close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Authenticated Account & Profile -->
+  <div id="modalAuth" class="modal-backdrop">
+    <div class="modal-window" style="max-width: 440px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <svg class="ui-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <h3 class="modal-title">Account Profile</h3>
+        </div>
+        <button class="btn btn-outline btn-sm modal-close" style="line-height: 1; padding: 4px 8px;">
+          <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="modal-body" style="text-align: center; padding: 24px 20px;">
+        <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px auto;">
+          <svg style="width: 32px; height: 32px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <h4 style="font-size: 1.15rem; margin-bottom: 4px;">Signed In Agent</h4>
+        <p id="authProfileEmail" style="font-weight: 700; font-size: 1rem; color: var(--text-main); margin-bottom: 8px;"></p>
+        <div style="background: var(--bg-subtle); border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 20px; font-size: 0.78rem; color: var(--text-muted); font-family: var(--font-mono); word-break: break-all;">
+          UID: <span id="authProfileUid"></span>
+        </div>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+          <button id="btnAuthSignOut" class="btn btn-danger" style="flex: 1;">
+            <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Sign Out</span>
+          </button>
+          <button class="btn btn-secondary modal-close" style="flex: 1;">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/calculator.js?v=20261013-4"></script>
+  <script src="js/store.js?v=20261013-4"></script>
+  <script src="js/app.js?v=20261013-4"></script>
+  <script type="module" src="js/auth.js?v=20261013-4"></script>
+</body>
+</html>
