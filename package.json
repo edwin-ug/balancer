@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
+    "build": "echo 'Static build ready'",
     "test": "node tests/calculator.test.js && node tests/store.test.js && node tests/app_integrity.test.js"
   },
   "keywords": [
