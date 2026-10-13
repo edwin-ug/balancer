@@ -75,8 +75,6 @@ $$\text{Variance / Discrepancy} = \text{Net Actual Capital} - \text{Target Capit
 ---
 
 ## History & Ledgers
-- **Permanent Archive:** Every saved balancing session is recorded with full breakdown, timestamp, status, and optional notes.
-- **Stakeholder Ledger:** Summarizes cumulative money taken out, injected, and net balance owed to/by each stakeholder.
 - **Agent Ledger:** Tracks personal phone float held by each agent over time.
 - **Sharing & Export:**
   - **Share WhatsApp Report:** Formats a clean executive summary ready to paste directly into WhatsApp.
@@ -86,15 +84,19 @@ $$\text{Variance / Discrepancy} = \text{Net Actual Capital} - \text{Target Capit
 
 ---
 
-## How to Run the App
+## Live Access
 
-### Option 1: Open Directly in Any Browser (No Server Needed)
-Double-click or open `index.html` in Safari, Chrome, Edge, or Firefox:
-```bash
-open index.html
-```
+The app is deployed and accessible at:
 
-### Option 2: Local Server with Node.js
+**[https://balancer-gamma.vercel.app](https://balancer-gamma.vercel.app)**
+
+Sign in with your registered email and password, or create a new account from the login screen.
+
+---
+
+## How to Run Locally
+
+### Local Server with Node.js
 ```bash
 npm start
 ```
@@ -102,6 +104,8 @@ The server will start at:
 ```
 http://localhost:3030
 ```
+
+> **Note:** Firebase Authentication requires the app to be served over HTTP/HTTPS — do not open `index.html` directly as a file (`file://`) as authentication will not work.
 
 ### Running Tests
 To verify all calculations, state storage, and app integrity:

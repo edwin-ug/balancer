@@ -12,7 +12,7 @@
   <!-- Industry-Standard Typography: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=20261013-4">
 </head>
 <body>
@@ -225,7 +225,7 @@
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
           </svg>
-          <span id="authHeaderLabel">Sign In</span>
+          <span id="authHeaderLabel" class="auth-header-label">Sign In</span>
         </button>
       </div>
     </div>
@@ -263,79 +263,47 @@
     <!-- TAB 1: BALANCING FORM -->
     <div id="tab-balancing" class="tab-view active">
       
-      <!-- Executive Hero Overview Grid (Baseline Capital + Live Status) -->
-      <div class="hero-overview-grid">
-        <!-- Target Capital Banner -->
-        <section class="target-capital-card">
-          <div class="target-header">
-            <span class="target-tag">
-              <img src="assets/target.png?v=20261013-4" class="target-icon-img" alt="">
-              <span>Baseline Capital</span>
-            </span>
-            <span id="targetSourceDisplay" class="target-source-text">
-              Source: Preset Capital
-            </span>
-          </div>
-          <div class="target-value-container">
-            <span class="target-currency">UGX</span>
-            <span id="targetAmountDisplay" class="target-amount">0</span>
-          </div>
-          <div class="target-actions">
-            <button id="btnSwitchCapitalSource" class="btn btn-secondary btn-sm">
-              <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="16 3 21 3 21 8"></polyline>
-                <line x1="4" y1="20" x2="21" y2="3"></line>
-                <polyline points="21 16 21 21 16 21"></polyline>
-                <line x1="15" y1="15" x2="21" y2="21"></line>
-                <line x1="4" y1="4" x2="9" y2="9"></line>
-              </svg>
-              <span>Switch Source</span>
-            </button>
-            <button id="btnEditTargetCapital" class="btn btn-secondary btn-sm">
-              <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 20h9"></path>
-                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-              </svg>
-              <span>Edit Target</span>
-            </button>
-          </div>
-        </section>
-
-        <!-- Executive Status Live Card -->
-        <section class="executive-status-card">
-          <div class="exec-header">
-            <span class="exec-title">Live Session Overview</span>
-            <span id="heroStatusPill" class="balance-status-badge status-balanced">
-              <span class="status-badge-icon">
-                <svg class="status-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-              </span>
-              <span id="heroStatusText">Balanced (UGX 0)</span>
-            </span>
-          </div>
-          <div class="exec-metrics-row">
-            <div class="exec-metric">
-              <span class="exec-metric-label">Net Actual Capital</span>
-              <span id="heroNetCapital" class="exec-metric-val">UGX 0</span>
-            </div>
-            <div class="exec-metric">
-              <span class="exec-metric-label">Variance</span>
-              <span id="heroVariance" class="exec-metric-val">UGX 0</span>
-            </div>
-          </div>
-          <div style="display: flex; gap: 8px; margin-top: 10px;">
-            <button id="btnHeroSave" class="btn btn-primary btn-sm" style="flex: 1;">
-              <img src="assets/save-balancing-session.png?v=20261013-4" class="btn-icon-img" alt="">
-              <span>Save Session</span>
-            </button>
-            <button id="btnHeroShare" class="btn btn-secondary btn-sm">
-              <img src="assets/share.png?v=20261013-4" class="btn-icon-img" alt="">
-              <span>WhatsApp</span>
-            </button>
-          </div>
-        </section>
-      </div>
+      <!-- Baseline Capital Card (standalone, no live overview) -->
+      <section class="target-capital-card" style="margin-bottom: 20px;">
+        <div class="target-header">
+          <span class="target-tag">
+            <img src="assets/target.png?v=20261013-4" class="target-icon-img" alt="">
+            <span>Baseline Capital</span>
+          </span>
+          <span id="targetSourceDisplay" class="target-source-text">
+            Source: Preset Capital
+          </span>
+        </div>
+        <div class="target-value-container">
+          <span class="target-currency">UGX</span>
+          <span id="targetAmountDisplay" class="target-amount">0</span>
+        </div>
+        <div class="target-actions">
+          <button id="btnSwitchCapitalSource" class="btn btn-secondary btn-sm">
+            <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 3 21 3 21 8"></polyline>
+              <line x1="4" y1="20" x2="21" y2="3"></line>
+              <polyline points="21 16 21 21 16 21"></polyline>
+              <line x1="15" y1="15" x2="21" y2="21"></line>
+              <line x1="4" y1="4" x2="9" y2="9"></line>
+            </svg>
+            <span>Switch Source</span>
+          </button>
+          <button id="btnEditTargetCapital" class="btn btn-secondary btn-sm">
+            <svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
+            <span>Edit Target</span>
+          </button>
+        </div>
+      </section>
+      <!-- Hidden hero elements referenced by app.js (no longer rendered in DOM) -->
+      <span id="heroStatusPill" style="display:none;"><span class="status-badge-icon"></span><span id="heroStatusText"></span></span>
+      <span id="heroNetCapital" style="display:none;"></span>
+      <span id="heroVariance" style="display:none;"></span>
+      <button id="btnHeroSave" style="display:none;"></button>
+      <button id="btnHeroShare" style="display:none;"></button>
 
       <!-- Float Section -->
       <section class="card">
@@ -1085,45 +1053,15 @@
 
   </main>
 
-  <!-- Sticky Bottom Summary Bar -->
-  <footer class="sticky-balance-bar">
-    <div class="sticky-balance-container">
-      <div id="stickyStatusBadge" class="balance-status-badge status-balanced">
-        <span class="status-badge-icon">
-          <svg class="status-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-        </span>
-        <span id="stickyStatusText">Balanced (UGX 0)</span>
-      </div>
-
-      <div class="balance-metrics-summary">
-        <div class="metric-item">
-          <span class="metric-label">Target Capital</span>
-          <span id="stickyTargetCapital" class="metric-val">UGX 0</span>
-        </div>
-        <div class="metric-item">
-          <span class="metric-label">Net Actual Capital</span>
-          <span id="stickyNetCapital" class="metric-val">UGX 0</span>
-        </div>
-        <div class="metric-item">
-          <span class="metric-label">Variance</span>
-          <span id="stickyVariance" class="metric-val">UGX 0</span>
-        </div>
-      </div>
-
-      <div class="sticky-action-buttons">
-        <button id="btnStickySave" class="btn btn-primary">
-          <img src="assets/save-balancing-session.png?v=20261013-4" class="btn-icon-img" alt="">
-          <span>Save Session</span>
-        </button>
-        <button id="btnStickyShare" class="btn btn-secondary">
-          <img src="assets/share.png?v=20261013-4" class="btn-icon-img" alt="">
-          <span>WhatsApp</span>
-        </button>
-      </div>
-    </div>
-  </footer>
+  <!-- Hidden stubs for sticky bar IDs referenced by app.js (floating bar removed for clean UI) -->
+  <div style="display:none;" aria-hidden="true">
+    <span id="stickyStatusBadge" class="balance-status-badge status-balanced"><span class="status-badge-icon"></span><span id="stickyStatusText"></span></span>
+    <span id="stickyTargetCapital"></span>
+    <span id="stickyNetCapital"></span>
+    <span id="stickyVariance"></span>
+    <button id="btnStickySave"></button>
+    <button id="btnStickyShare"></button>
+  </div>
   </div> <!-- /#appRoot -->
 
   <!-- MODAL: Cash Denominations Calculator -->

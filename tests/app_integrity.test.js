@@ -113,13 +113,14 @@ assert(!indexHtml.includes('chip-btn'), 'index.html still contains chip-btn');
 assert(!appJs.includes('chip-btn'), 'app.js still contains chip-btn');
 console.log('✓ Verified: Quick chip buttons (+50k, +100k, etc.) removed for polished UI');
 
-// 8. Verify Industry Standard Fonts (Inter & JetBrains Mono)
+// 8. Verify Industry Standard Fonts (Inter only - no slashed-zero fonts)
 assert(indexHtml.includes('family=Inter'), 'Inter font link missing in index.html');
-assert(indexHtml.includes('family=JetBrains+Mono'), 'JetBrains Mono font link missing in index.html');
+assert(!indexHtml.includes('JetBrains+Mono'), 'JetBrains Mono (slashed zeros) should not be in index.html');
 assert(css.includes('--font-sans') && css.includes('Inter'), 'Inter sans font stack missing in style.css');
-assert(css.includes('--font-mono') && css.includes('JetBrains Mono'), 'JetBrains Mono font stack missing in style.css');
+assert(css.includes('--font-mono') && css.includes('Inter'), 'Inter mono font stack missing in style.css');
+assert(!css.includes('JetBrains Mono'), 'JetBrains Mono (slashed zeros) should not be in style.css');
 assert(css.includes('tabular-nums'), 'font-variant-numeric: tabular-nums missing in style.css');
-console.log('✓ Verified: Industry standard typography (Inter & JetBrains Mono) configured');
+console.log('✓ Verified: Industry standard typography (Inter only, no slashed-zero fonts) configured');
 
 // 9. Verify Target Capital Card has light background and dark high contrast text
 assert(css.includes('.target-capital-card'), 'target-capital-card missing in style.css');
