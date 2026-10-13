@@ -1819,6 +1819,15 @@ input[type="checkbox"]:checked + .toggle-switch::after {
   }
 }
 
+@media (max-width: 380px) {
+  .cloud-sync-badge {
+    display: none;
+  }
+  .quickResetBtn-label {
+    display: none;
+  }
+}
+
 /* Print Styles */
 @media print {
   body {

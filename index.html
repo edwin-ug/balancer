@@ -221,7 +221,7 @@
             <polyline points="1 4 1 10 7 10"></polyline>
             <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
           </svg>
-          <span>Reset Form</span>
+          <span class="quickResetBtn-label">Reset Form</span>
         </button>
         <div id="cloudSyncIndicator" class="cloud-sync-badge sync-idle" title="Cloud Sync: Standby">
           <svg class="ui-svg-sm cloud-sync-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -410,20 +410,7 @@
       <!-- Commissions Section (Toggleable) -->
       <!-- Note: Commission earned is NOT considered money that belongs to the business, so it is deducted if included -->
       <section class="card">
-        <div class="card-header">
-          <div>
-            <h2 class="card-title">
-              <svg class="ui-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-              </svg>
-              <span>Commissions Earned</span>
-            </h2>
-            <p class="card-subtitle">Commissions earned do not belong to the business (deducted from counted capital)</p>
-          </div>
-          <span id="commissionsSubtotalBadge" class="section-badge">-UGX 0</span>
-        </div>
+
 
         <div class="toggle-switch-container" id="commissionToggleWrapper">
           <input type="checkbox" id="toggleCommission" style="display: none;">
@@ -447,16 +434,6 @@
 
       <!-- Stakeholder Money Taken Out Temporarily (Toggleable / Expandable) -->
       <section class="card">
-        <div class="card-header">
-          <div>
-            <h2 class="card-title">
-              <img src="assets/money-flow-money-out-and-money-in.png?v=20261013-4" class="section-icon" alt="">
-              <span>Money Taken Out by Stakeholders (Drawings)</span>
-            </h2>
-            <p class="card-subtitle">Temporary withdrawals. Added back to business capital.</p>
-          </div>
-          <span id="stakeholderOutSubtotalBadge" class="section-badge">+UGX 0</span>
-        </div>
 
         <div class="toggle-switch-container" id="stakeholderOutToggleWrapper">
           <input type="checkbox" id="toggleStakeholderOut" style="display: none;">
@@ -480,16 +457,6 @@
 
       <!-- Stakeholder Money Added Temporarily (Toggleable / Expandable) -->
       <section class="card">
-        <div class="card-header">
-          <div>
-            <h2 class="card-title">
-              <img src="assets/money-flow-money-out-and-money-in.png?v=20261013-4" class="section-icon" alt="">
-              <span>Money Added by Stakeholders (Injections)</span>
-            </h2>
-            <p class="card-subtitle">Temporary injections. Deducted from calculated capital.</p>
-          </div>
-          <span id="stakeholderInSubtotalBadge" class="section-badge">-UGX 0</span>
-        </div>
 
         <div class="toggle-switch-container" id="stakeholderInToggleWrapper">
           <input type="checkbox" id="toggleStakeholderIn" style="display: none;">

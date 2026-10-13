@@ -558,13 +558,13 @@ document.addEventListener('DOMContentLoaded', () => {
     agentsSubtotalText.textContent = `UGX ${window.formatUGX(calc.agentPhonesTotal)}`;
 
     // Note: Commission earned is deducted from capital because it does not belong to the business
-    commissionsSubtotalBadge.textContent = `-UGX ${window.formatUGX(calc.commissionTotal)}`;
+    if (commissionsSubtotalBadge) commissionsSubtotalBadge.textContent = `-UGX ${window.formatUGX(calc.commissionTotal)}`;
     commissionsSubtotalText.textContent = `-UGX ${window.formatUGX(calc.commissionTotal)}`;
 
-    stakeholderOutSubtotalBadge.textContent = `+UGX ${window.formatUGX(calc.stakeholderOutTotal)}`;
+    if (stakeholderOutSubtotalBadge) stakeholderOutSubtotalBadge.textContent = `+UGX ${window.formatUGX(calc.stakeholderOutTotal)}`;
     stakeholderOutSubtotalText.textContent = `+UGX ${window.formatUGX(calc.stakeholderOutTotal)}`;
 
-    stakeholderInSubtotalBadge.textContent = `-UGX ${window.formatUGX(calc.stakeholderInTotal)}`;
+    if (stakeholderInSubtotalBadge) stakeholderInSubtotalBadge.textContent = `-UGX ${window.formatUGX(calc.stakeholderInTotal)}`;
     stakeholderInSubtotalText.textContent = `-UGX ${window.formatUGX(calc.stakeholderInTotal)}`;
 
     // Explainer breakdown
@@ -629,6 +629,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     explainerVariance.textContent = varianceDisplay;
+    // Color the Final Balancing Result for quick intuitive reading
+    if (calc.status === 'shortage') {
+      explainerVariance.style.color = '#dc2626'; // red — shortage
+      explainerVariance.style.fontWeight = '700';
+    } else {
+      explainerVariance.style.color = '#16a34a'; // green — surplus or balanced
+      explainerVariance.style.fontWeight = '700';
+    }
 
     // Update status badge pill on card
     breakdownStatusPill.className = `balance-status-badge ${badgeClass}`;

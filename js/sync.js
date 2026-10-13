@@ -216,6 +216,10 @@ class CloudSync {
       this.unsubscribeSnapshot();
       this.unsubscribeSnapshot = null;
     }
+    if (this.storeUnsubscribe) {
+      this.storeUnsubscribe();
+      this.storeUnsubscribe = null;
+    }
     if (this.syncTimeout) {
       clearTimeout(this.syncTimeout);
       this.syncTimeout = null;

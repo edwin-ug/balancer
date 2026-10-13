@@ -452,7 +452,9 @@ class Store {
     } catch (e) {
       console.error('Error saving current form to localStorage:', e);
     }
-    this.notify();
+    // Note: deliberately no notify() here — local form saves do not require
+    // a full UI re-render. Subscribers are only notified on settings changes,
+    // history saves, and remote cloud sync events.
   }
 
   resetCurrentForm() {
