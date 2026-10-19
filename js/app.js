@@ -241,6 +241,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 3500);
   }
 
+  // Export showToast globally
+  window.showToast = showToast;
+
   // -------------------------------------------------------------
   // TAB NAVIGATION
   // -------------------------------------------------------------

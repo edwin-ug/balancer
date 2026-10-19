@@ -27,10 +27,36 @@ try {
 }
 
 // Global reference
+// Global reference
 window.balancerAuth = {
   auth,
   currentUser: null
 };
+
+// Global showToast fallback guaranteed to work anywhere
+function showToast(message, type = 'info') {
+  if (typeof window !== 'undefined' && typeof window.showToast === 'function' && window.showToast !== showToast) {
+    return window.showToast(message, type);
+  }
+  const container = document.getElementById('toastContainer');
+  if (!container) return;
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  let iconSvg = `<svg class="ui-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`;
+  if (type === 'success') {
+    iconSvg = `<svg class="ui-svg-sm" style="color: var(--success);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+  } else if (type === 'error') {
+    iconSvg = `<svg class="ui-svg-sm" style="color: var(--danger);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
+  }
+  toast.innerHTML = `<span>${iconSvg}</span> <span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(-10px)';
+    toast.style.transition = 'all 0.3s ease';
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}
 
 // Friendly Firebase error message translator
 function getFriendlyAuthErrorMessage(errorCode) {
@@ -51,8 +77,12 @@ function getFriendlyAuthErrorMessage(errorCode) {
       return 'Too many failed attempts. Please wait a few moments and try again.';
     case 'auth/user-disabled':
       return 'This user account has been disabled. Please contact support.';
+    case 'auth/missing-password':
+      return 'Please enter your password.';
+    case 'auth/missing-email':
+      return 'Please enter your email address.';
     default:
-      return 'Authentication failed. Please check your input and try again.';
+      return 'Authentication failed. Please check your credentials and try again.';
   }
 }
 
@@ -81,10 +111,45 @@ document.addEventListener('DOMContentLoaded', () => {
   const formSignUp = document.getElementById('formSignUp');
   const formReset = document.getElementById('formReset');
 
+  // Inline Alert Managers
+  function showAuthAlert(panel, message, type = 'error') {
+    let alertEl;
+    if (panel === 'signin') alertEl = document.getElementById('authAlertSignIn');
+    else if (panel === 'signup') alertEl = document.getElementById('authAlertSignUp');
+    else if (panel === 'reset') alertEl = document.getElementById('authAlertReset');
+
+    if (!alertEl) return;
+    const iconSvg = type === 'success'
+      ? `<svg class="ui-svg-sm" style="color: var(--success);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`
+      : `<svg class="ui-svg-sm" style="color: var(--danger);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
+
+    alertEl.className = `auth-alert auth-alert-${type}`;
+    alertEl.innerHTML = `<span>${iconSvg}</span> <span>${message}</span>`;
+    alertEl.style.display = 'flex';
+  }
+
+  function clearAuthAlerts() {
+    ['authAlertSignIn', 'authAlertSignUp', 'authAlertReset'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.display = 'none';
+        el.innerHTML = '';
+      }
+    });
+  }
+
+  // Clear alerts as soon as user types
+  document.querySelectorAll('.auth-input').forEach(input => {
+    input.addEventListener('input', () => {
+      clearAuthAlerts();
+    });
+  });
+
   // -------------------------------------------------------------
   // TAB SWITCHING (Accents appear strictly and exclusively on the active tab)
   // -------------------------------------------------------------
   function switchAuthTab(tabName) {
+    clearAuthAlerts();
     const allTabs = document.querySelectorAll('.auth-tab');
     const allPanels = document.querySelectorAll('.auth-panel');
 
@@ -191,7 +256,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Connect real-time bidirectional cloud sync across devices
         cloudSync.connectUser(user, window.balancerStore);
       } else {
-        // User is SIGNED OUT: Hide App, Reveal Login Screen Gate
+        // User is SIGNED OUT: Close any open modals, hide App, reveal Login Screen Gate
+        document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('open'));
         cloudSync.disconnectUser();
         if (appRoot) appRoot.style.display = 'none';
         if (authGateScreen) authGateScreen.style.display = 'flex';
@@ -200,6 +266,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btnAuthHeader) {
           btnAuthHeader.classList.remove('authenticated');
         }
+
+        // Clear password fields for security and clean state
+        const signInPwd = document.getElementById('inputSignInPassword');
+        if (signInPwd) signInPwd.value = '';
+        const signUpPwd = document.getElementById('inputSignUpPassword');
+        if (signUpPwd) signUpPwd.value = '';
+        const signUpConfirmPwd = document.getElementById('inputSignUpConfirmPassword');
+        if (signUpConfirmPwd) signUpConfirmPwd.value = '';
 
         // Reset to Sign In tab cleanly
         switchAuthTab('signin');
@@ -243,7 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
       await cloudSync.forceSyncNow(window.balancerStore);
       btnForceSync.disabled = false;
       btnForceSync.innerHTML = '<span>Sync Now</span>';
-      if (window.showToast) window.showToast('Cloud sync complete', 'success');
+      showToast('Cloud sync complete', 'success');
     });
   }
 
@@ -253,30 +327,65 @@ document.addEventListener('DOMContentLoaded', () => {
   if (formSignIn) {
     formSignIn.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('inputSignInEmail').value.trim();
-      const password = document.getElementById('inputSignInPassword').value;
+      clearAuthAlerts();
+
+      const emailInput = document.getElementById('inputSignInEmail');
+      const passwordInput = document.getElementById('inputSignInPassword');
+      const email = (emailInput ? emailInput.value : '').trim().toLowerCase();
+      const password = passwordInput ? passwordInput.value : '';
       const btnSubmit = formSignIn.querySelector('button[type="submit"]');
 
-      if (!email || !password) {
-        if (window.showToast) window.showToast('Please enter both email and password', 'warning');
+      if (!email) {
+        showAuthAlert('signin', 'Please enter your email address.', 'error');
+        showToast('Please enter your email address', 'warning');
+        if (emailInput) emailInput.focus();
         return;
       }
 
-      const originalText = btnSubmit.innerHTML;
-      btnSubmit.disabled = true;
-      btnSubmit.textContent = 'Signing in...';
+      if (!password) {
+        showAuthAlert('signin', 'Please enter your password.', 'error');
+        showToast('Please enter your password', 'warning');
+        if (passwordInput) passwordInput.focus();
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showAuthAlert('signin', 'Please enter a valid email address (e.g. name@domain.com).', 'error');
+        showToast('Please enter a valid email address', 'warning');
+        if (emailInput) emailInput.focus();
+        return;
+      }
+
+      if (!auth) {
+        const errorMsg = 'Authentication service is unavailable. Please check your internet connection.';
+        showAuthAlert('signin', errorMsg, 'error');
+        showToast(errorMsg, 'error');
+        return;
+      }
+
+      const originalHtml = btnSubmit ? btnSubmit.innerHTML : '<span>Sign In to Balancer</span>';
+      if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = `<span class="auth-btn-spinner"></span> <span>Signing in...</span>`;
+      }
 
       try {
-        await signInWithEmailAndPassword(auth, email, password);
-        if (window.showToast) window.showToast(`Welcome back, ${email}!`, 'success');
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        clearAuthAlerts();
+        showToast(`Welcome back, ${userCredential.user?.email || email}!`, 'success');
         formSignIn.reset();
+        document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('open'));
       } catch (err) {
         console.error('Sign In Error:', err);
         const msg = getFriendlyAuthErrorMessage(err.code);
-        if (window.showToast) window.showToast(msg, 'error');
+        showAuthAlert('signin', msg, 'error');
+        showToast(msg, 'error');
       } finally {
-        btnSubmit.disabled = false;
-        btnSubmit.innerHTML = originalText;
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = originalHtml;
+        }
       }
     });
   }
@@ -287,41 +396,82 @@ document.addEventListener('DOMContentLoaded', () => {
   if (formSignUp) {
     formSignUp.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('inputSignUpEmail').value.trim();
-      const password = document.getElementById('inputSignUpPassword').value;
-      const confirmPassword = document.getElementById('inputSignUpConfirmPassword').value;
+      clearAuthAlerts();
+
+      const emailInput = document.getElementById('inputSignUpEmail');
+      const passwordInput = document.getElementById('inputSignUpPassword');
+      const confirmPasswordInput = document.getElementById('inputSignUpConfirmPassword');
+
+      const email = (emailInput ? emailInput.value : '').trim().toLowerCase();
+      const password = passwordInput ? passwordInput.value : '';
+      const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : '';
       const btnSubmit = formSignUp.querySelector('button[type="submit"]');
 
-      if (!email || !password) {
-        if (window.showToast) window.showToast('Please fill out all required fields', 'warning');
+      if (!email) {
+        showAuthAlert('signup', 'Please enter your email address.', 'error');
+        showToast('Please enter your email address', 'warning');
+        if (emailInput) emailInput.focus();
         return;
       }
 
-      if (password !== confirmPassword) {
-        if (window.showToast) window.showToast('Passwords do not match', 'warning');
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showAuthAlert('signup', 'Please enter a valid email address.', 'error');
+        showToast('Please enter a valid email address', 'warning');
+        if (emailInput) emailInput.focus();
+        return;
+      }
+
+      if (!password) {
+        showAuthAlert('signup', 'Please enter a password.', 'error');
+        showToast('Please enter a password', 'warning');
+        if (passwordInput) passwordInput.focus();
         return;
       }
 
       if (password.length < 6) {
-        if (window.showToast) window.showToast('Password must be at least 6 characters', 'warning');
+        showAuthAlert('signup', 'Password must be at least 6 characters long.', 'error');
+        showToast('Password must be at least 6 characters', 'warning');
+        if (passwordInput) passwordInput.focus();
         return;
       }
 
-      const originalText = btnSubmit.innerHTML;
-      btnSubmit.disabled = true;
-      btnSubmit.textContent = 'Creating account...';
+      if (password !== confirmPassword) {
+        showAuthAlert('signup', 'Passwords do not match. Please re-enter.', 'error');
+        showToast('Passwords do not match', 'warning');
+        if (confirmPasswordInput) confirmPasswordInput.focus();
+        return;
+      }
+
+      if (!auth) {
+        const errorMsg = 'Authentication service is unavailable. Please check your internet connection.';
+        showAuthAlert('signup', errorMsg, 'error');
+        showToast(errorMsg, 'error');
+        return;
+      }
+
+      const originalHtml = btnSubmit ? btnSubmit.innerHTML : '<span>Create Account</span>';
+      if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = `<span class="auth-btn-spinner"></span> <span>Creating account...</span>`;
+      }
 
       try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        if (window.showToast) window.showToast(`Account successfully created for ${email}!`, 'success');
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        clearAuthAlerts();
+        showToast(`Account successfully created for ${userCredential.user?.email || email}!`, 'success');
         formSignUp.reset();
+        document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('open'));
       } catch (err) {
         console.error('Sign Up Error:', err);
         const msg = getFriendlyAuthErrorMessage(err.code);
-        if (window.showToast) window.showToast(msg, 'error');
+        showAuthAlert('signup', msg, 'error');
+        showToast(msg, 'error');
       } finally {
-        btnSubmit.disabled = false;
-        btnSubmit.innerHTML = originalText;
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = originalHtml;
+        }
       }
     });
   }
@@ -332,30 +482,58 @@ document.addEventListener('DOMContentLoaded', () => {
   if (formReset) {
     formReset.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('inputResetEmail').value.trim();
+      clearAuthAlerts();
+
+      const emailInput = document.getElementById('inputResetEmail');
+      const email = (emailInput ? emailInput.value : '').trim().toLowerCase();
       const btnSubmit = formReset.querySelector('button[type="submit"]');
 
       if (!email) {
-        if (window.showToast) window.showToast('Please enter your account email address', 'warning');
+        showAuthAlert('reset', 'Please enter your registered email address.', 'error');
+        showToast('Please enter your account email address', 'warning');
+        if (emailInput) emailInput.focus();
         return;
       }
 
-      const originalText = btnSubmit.innerHTML;
-      btnSubmit.disabled = true;
-      btnSubmit.textContent = 'Sending reset link...';
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showAuthAlert('reset', 'Please enter a valid email address.', 'error');
+        showToast('Please enter a valid email address', 'warning');
+        if (emailInput) emailInput.focus();
+        return;
+      }
+
+      if (!auth) {
+        const errorMsg = 'Authentication service is unavailable. Please check your internet connection.';
+        showAuthAlert('reset', errorMsg, 'error');
+        showToast(errorMsg, 'error');
+        return;
+      }
+
+      const originalHtml = btnSubmit ? btnSubmit.innerHTML : '<span>Send Password Reset Link</span>';
+      if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = `<span class="auth-btn-spinner"></span> <span>Sending reset link...</span>`;
+      }
 
       try {
         await sendPasswordResetEmail(auth, email);
-        if (window.showToast) window.showToast(`Password reset link sent to ${email}`, 'success');
-        switchAuthTab('signin');
+        showAuthAlert('reset', `Password reset link sent to ${email}. Please check your inbox.`, 'success');
+        showToast(`Password reset link sent to ${email}`, 'success');
         formReset.reset();
+        setTimeout(() => {
+          switchAuthTab('signin');
+        }, 2500);
       } catch (err) {
         console.error('Reset Error:', err);
         const msg = getFriendlyAuthErrorMessage(err.code);
-        if (window.showToast) window.showToast(msg, 'error');
+        showAuthAlert('reset', msg, 'error');
+        showToast(msg, 'error');
       } finally {
-        btnSubmit.disabled = false;
-        btnSubmit.innerHTML = originalText;
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = originalHtml;
+        }
       }
     });
   }
@@ -365,15 +543,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // -------------------------------------------------------------
   if (btnAuthSignOut) {
     btnAuthSignOut.addEventListener('click', async () => {
-      if (confirm('Are you sure you want to sign out of Balancer?')) {
-        try {
-          await signOut(auth);
-          if (modalAuth) modalAuth.classList.remove('open');
-          if (window.showToast) window.showToast('Signed out of Balancer', 'info');
-        } catch (err) {
-          console.error('Sign Out Error:', err);
-          if (window.showToast) window.showToast('Failed to sign out', 'error');
-        }
+      if (!confirm('Are you sure you want to sign out of Balancer?')) return;
+      document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('open'));
+      try {
+        await signOut(auth);
+        showToast('Signed out of Balancer', 'info');
+      } catch (err) {
+        console.error('Sign Out Error:', err);
+        showToast('Failed to sign out', 'error');
       }
     });
   }
