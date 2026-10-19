@@ -31,8 +31,8 @@ requiredFiles.forEach(file => {
 
 // Check provided asset files exist
 const requiredAssets = [
-  'assets/balancer-logo.svg',
-  'assets/balancer-logo.png',
+  'assets/balancer-logo2.svg',
+  'assets/balancer-logo2.png',
   'assets/capital.png',
   'assets/physical-money.png',
   'assets/money-on-phone.png',
@@ -62,8 +62,8 @@ const calcJs = fs.readFileSync(path.join(projectRoot, 'js/calculator.js'), 'utf8
 const css = fs.readFileSync(path.join(projectRoot, 'css/style.css'), 'utf8');
 
 // 1. Verify Favicon
-assert(indexHtml.includes('href="assets/balancer-logo.svg'), 'Favicon SVG link missing in index.html');
-console.log('✓ Favicon points to assets/balancer-logo.svg');
+assert(indexHtml.includes('href="assets/balancer-logo2.svg'), 'Favicon SVG link missing in index.html');
+console.log('✓ Favicon points to assets/balancer-logo2.svg');
 
 // 2. Verify NO EMOJIS in code/markup
 // Standard emoji unicode range regex
@@ -101,7 +101,7 @@ assert(storeJs.includes('stakeholder1') && storeJs.includes('stakeholder2') && s
 console.log('✓ Agents and Stakeholders verified');
 
 // 6. Verify SVGs prioritized and assets used
-assert(indexHtml.includes('<svg') && indexHtml.includes('assets/balancer-logo.svg'));
+assert(indexHtml.includes('<svg') && indexHtml.includes('assets/balancer-logo2.svg'));
 assert(indexHtml.includes('assets/physical-money.png'));
 assert(indexHtml.includes('assets/money-on-phone.png'));
 assert(indexHtml.includes('assets/money-flow-money-out-and-money-in.png'));

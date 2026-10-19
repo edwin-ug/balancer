@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="964px" height="964px" viewBox="0 0 964 964" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>balancer-logo2</title>
+    <g id="balancer-logo2" stroke="none" fill="none">
+        <path d="M477.000015,448.635382 L477.000018,448.660905 L478.356229,958.907865 C216.583498,957.017656 5,744.217815 5,482 C5,219.873133 216.436753,7.12996493 478.085171,5.09898918 Z" id="Oval" stroke="#FFF5F5" stroke-width="10" fill="#000000" fill-rule="evenodd"></path>
+        <path d="M957.000015,448.635382 L957.000018,448.660905 L958.356229,958.907865 C696.583498,957.017656 485,744.217815 485,482 C485,219.873133 696.436753,7.12996493 958.085171,5.09898918 Z" id="Oval" stroke="#000000" stroke-width="10" fill="#FFFFFF" fill-rule="evenodd" transform="translate(721.7548, 482) scale(-1, 1) translate(-721.7548, -482)"></path>
+        <g id="Group" stroke-width="1" fill-rule="evenodd" transform="translate(482, 482) rotate(180) translate(-482, -482)translate(254, 254)">
+            <path d="M228.116041,456 L228.764317,456 L228.116041,212.223353 L228.635531,0 C229.014325,0 228.841162,0 228.116041,0 C102.13103,0 0,102.079077 0,228 C0,353.920923 102.13103,456 228.116041,456 Z" id="Oval" fill="#000000"></path>
+            <path d="M455.285542,456 L455.933819,456 L455.285542,212.223353 L455.805032,0 C456.183827,0 456.010664,0 455.285542,0 C329.300532,0 227.169501,102.079077 227.169501,228 C227.169501,353.920923 329.300532,456 455.285542,456 Z" id="Oval" fill="#FFFFFF" transform="translate(341.5848, 228) scale(-1, 1) translate(-341.5848, -228)"></path>
+        </g>
+        <text id="B" font-family="Helvetica-Bold, Helvetica" font-size="215" font-weight="bold" fill="#000000">
+            <tspan x="306" y="562">B</tspan>
+        </text>
+        <text id="B" transform="translate(579, 482) scale(-1, 1) translate(-579, -482)" font-family="Helvetica-Bold, Helvetica" font-size="215" font-weight="bold" fill="#FFFFFF">
+            <tspan x="501" y="562">B</tspan>
+        </text>
+    </g>
+</svg>
