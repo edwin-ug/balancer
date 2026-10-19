@@ -2,6 +2,30 @@
 
 **Balancer** is a specialized, responsive web application designed for mobile money agents and agent banking kiosk operators in Uganda. It streamlines shift and daily balancing by automatically tracking float, physical cash, agent phone holdings, commissions, and temporary stakeholder withdrawals/injections against preset or prior capital targets.
 
+**Live Demo:** [balancer-gamma.vercel.app](https://balancer-gamma.vercel.app)
+
+## Screenshots
+
+### Desktop Interface
+
+**Capital Balancing Dashboard**
+<img width="1440" height="869" alt="Screenshot 2026-10-19 at 14 29 33" src="https://github.com/user-attachments/assets/0090083d-0ae1-4742-8e3c-59cc644730f3" />
+
+**Session History Archive**
+<img width="1440" height="869" alt="Screenshot 2026-10-19 at 14 30 12" src="https://github.com/user-attachments/assets/33637186-6b19-4fed-89f8-77ee7464bfe8" />
+
+**Secure Login Portal**
+<img width="1440" height="868" alt="Screenshot 2026-10-19 at 14 31 10" src="https://github.com/user-attachments/assets/722e11fe-42e1-4b61-b62e-03feaa29dab3" />
+
+### Mobile-First Experience
+
+**Mobile Float Accounting**
+<img width="585" height="1266" alt="IMG_1412" src="https://github.com/user-attachments/assets/4a9f7bbd-20c2-4356-a4f3-176827cf5d77" />
+
+**Mobile Authentication**
+<img width="585" height="1266" alt="IMG_1411" src="https://github.com/user-attachments/assets/bb547256-3ee2-449d-a911-2be485fc52b8" />
+<img width="585" height="1266" alt="IMG_1410" src="https://github.com/user-attachments/assets/709f954a-956d-4eb5-80ce-d6273d7ac72d" />
+
 ---
 
 ## Key Features
